@@ -7,7 +7,7 @@ namespace sdi_back_end_challenge_1.Helpers
     {
         public static class RentalCostCalculator
         {
-            public static (string size, int count, int totalCost) CalculateCost(IEnumerable<CarType> carTypes)
+            public static (string size, int count, long totalCost) CalculateCost(IEnumerable<CarType> carTypes)
             {
                 var (seats, _) = GetValidNumberOfSeats(); // Validate input
 
@@ -20,22 +20,21 @@ namespace sdi_back_end_challenge_1.Helpers
                     int totalCost = numCars * carType.cost;
 
 
-                    if (remainingSeats > 0) 
-                    {   
- 
+                    if (remainingSeats > 0)
+                    {
                         foreach (var otherCarType in carTypes)
                         {
-                            
                             if (otherCarType != carType && remainingSeats <= otherCarType.capacity)
                             {
-                                possibleSolutions.Add(($"{carType.size} x {numCars} & {otherCarType.size} x 1", totalCost + otherCarType.cost));
+                                string solution = $"{FormatSolution(carType.size, numCars)}{FormatSolution(otherCarType.size, 1)}";
+                                possibleSolutions.Add((solution, totalCost + otherCarType.cost));
                             }
                         }
                     }
                     else
                     {
-                        
-                        possibleSolutions.Add(($"{carType.size} x {numCars}", totalCost));
+                        string solution = FormatSolution(carType.size, numCars);
+                        possibleSolutions.Add((solution, totalCost));
                     }
                 }
 
@@ -71,6 +70,15 @@ namespace sdi_back_end_challenge_1.Helpers
                     }
                 } while (!isValidInput);
                 return (seats, true);
+            }
+
+            private static string FormatSolution(string size, long count)
+            {
+                if (count > 0)
+                {
+                    return $"{size} x {count} ";
+                }
+                return string.Empty;
             }
         }
     }
